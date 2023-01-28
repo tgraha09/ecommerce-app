@@ -1,0 +1,37 @@
+﻿@page "/time"
+@inject IJSRuntime JS
+
+<button class="btn btn-primary" @onclick="@GetCurrentTime">Get Current Time</button>
+
+<h1>@CurrentTime</h1>
+
+@code {
+
+    private bool isRendered = false;
+
+    private MarkupString CurrentTime = new MarkupString("");
+
+    async void GetCurrentTime()
+    {
+        var dateTime = await JS.InvokeAsync<string>("JsLib.GetCurrentTime");
+
+        CurrentTime = new MarkupString(dateTime);
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Console.WriteLine(firstRender);
+
+        if (firstRender && isRendered == false)
+        {
+            isRendered = true;
+            //await this.JS.InvokeVoidAsync("console.log", firstRender);
+            //await this.JS.InvokeVoidAsync("console.log", isRendered);
+            await JS.InvokeVoidAsync("JsLib.Init");
+            StateHasChanged();
+        }
+
+    }
+}
